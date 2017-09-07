@@ -18,6 +18,10 @@ import reportwriterxml
 def output_results(results_dir, results_file, run_time, rampup, ts_interval, user_group_configs=None, xml_reports=False):
     results = Results(results_dir + results_file, run_time)
 
+    if not results.resp_stats_list:
+        print 'No results at all'
+        return
+
     report = reportwriter.Report(results_dir)
 
     print 'transactions: %i' % results.total_transactions
@@ -250,6 +254,8 @@ class Results(object):
 
         self.resp_stats_list = self.__parse_file()
 
+        if not self.resp_stats_list:
+            return
         self.epoch_start = self.resp_stats_list[0].epoch_secs
         self.epoch_finish = self.resp_stats_list[-1].epoch_secs
         self.start_datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self.epoch_start))
