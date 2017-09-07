@@ -57,84 +57,84 @@ def output_results(results_dir, results_file, run_time, rampup, ts_interval, use
         report.write_line('</table>')
     report.write_line('</div>')
 
-    report.write_line('<h2>All Transactions</h2>')
-
-    # all transactions - response times
-    trans_timer_points = []  # [elapsed, timervalue]
-    trans_timer_vals = []
-    for resp_stats in results.resp_stats_list:
-        t = (resp_stats.elapsed_time, resp_stats.trans_time)
-        trans_timer_points.append(t)
-        trans_timer_vals.append(resp_stats.trans_time)
-    graph.resp_graph_raw(trans_timer_points, 'All_Transactions_response_times.png', results_dir)
-
-    report.write_line('<h3>Transaction Response Summary (secs)</h3>')
-    report.write_line('<table>')
-    report.write_line('<tr><th>count</th><th>min</th><th>avg</th><th>80pct</th><th>90pct</th><th>95pct</th><th>max</th><th>stdev</th></tr>')
-    report.write_line('<tr><td>%i</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td></tr>'  % (
-        results.total_transactions,
-        min(trans_timer_vals),
-        average(trans_timer_vals),
-        percentile(trans_timer_vals, 80),
-        percentile(trans_timer_vals, 90),
-        percentile(trans_timer_vals, 95),
-        max(trans_timer_vals),
-        standard_dev(trans_timer_vals),
-    ))
-    report.write_line('</table>')
-
-
-    # all transactions - interval details
-    avg_resptime_points = {}  # {intervalnumber: avg_resptime}
-    percentile_80_resptime_points = {}  # {intervalnumber: 80pct_resptime}
-    percentile_90_resptime_points = {}  # {intervalnumber: 90pct_resptime}
-    interval_secs = ts_interval
-    splat_series = split_series(trans_timer_points, interval_secs)
-    report.write_line('<h3>Interval Details (secs)</h3>')
-    report.write_line('<table>')
-    report.write_line('<tr><th>interval</th><th>count</th><th>rate</th><th>min</th><th>avg</th><th>80pct</th><th>90pct</th><th>95pct</th><th>max</th><th>stdev</th></tr>')
-    for i, bucket in enumerate(splat_series):
-        interval_start = int((i + 1) * interval_secs)
-        cnt = len(bucket)
-
-        if cnt == 0:
-            report.write_line('<tr><td>%i</td><td>0</td><td>0</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td></tr>' % (i + 1))
-        else:
-            rate = cnt / float(interval_secs)
-            mn = min(bucket)
-            avg = average(bucket)
-            pct_80 = percentile(bucket, 80)
-            pct_90 = percentile(bucket, 90)
-            pct_95 = percentile(bucket, 95)
-            mx = max(bucket)
-            stdev = standard_dev(bucket)
-            report.write_line('<tr><td>%i</td><td>%i</td><td>%.2f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td></tr>' % (i + 1, cnt, rate, mn, avg, pct_80, pct_90, pct_95, mx, stdev))
-
-            avg_resptime_points[interval_start] = avg
-            percentile_80_resptime_points[interval_start] = pct_80
-            percentile_90_resptime_points[interval_start] = pct_90
-
-    report.write_line('</table>')
-    graph.resp_graph(avg_resptime_points, percentile_80_resptime_points, percentile_90_resptime_points, 'All_Transactions_response_times_intervals.png', results_dir)
-
-
-    report.write_line('<h3>Graphs</h3>')
-    report.write_line('<h4>Response Time: %s sec time-series</h4>' % ts_interval)
-    report.write_line('<img src="All_Transactions_response_times_intervals.png"></img>')
-    report.write_line('<h4>Response Time: raw data (all points)</h4>')
-    report.write_line('<img src="All_Transactions_response_times.png"></img>')
-    report.write_line('<h4>Throughput: 5 sec time-series</h4>')
-    report.write_line('<img src="All_Transactions_throughput.png"></img>')
-
-
-
-    # all transactions - throughput
-    throughput_points = {}  # {intervalnumber: numberofrequests}
-    interval_secs = ts_interval
-    splat_series = split_series(trans_timer_points, interval_secs)
-    for i, bucket in enumerate(splat_series):
-        throughput_points[int((i + 1) * interval_secs)] = (len(bucket) / interval_secs)
-    graph.tp_graph(throughput_points, 'All_Transactions_throughput.png', results_dir)
+    # report.write_line('<h2>All Transactions</h2>')
+    #
+    # # all transactions - response times
+    # trans_timer_points = []  # [elapsed, timervalue]
+    # trans_timer_vals = []
+    # for resp_stats in results.resp_stats_list:
+    #     t = (resp_stats.elapsed_time, resp_stats.trans_time)
+    #     trans_timer_points.append(t)
+    #     trans_timer_vals.append(resp_stats.trans_time)
+    # graph.resp_graph_raw(trans_timer_points, 'All_Transactions_response_times.png', results_dir)
+    #
+    # report.write_line('<h3>Transaction Response Summary (secs)</h3>')
+    # report.write_line('<table>')
+    # report.write_line('<tr><th>count</th><th>min</th><th>avg</th><th>80pct</th><th>90pct</th><th>95pct</th><th>max</th><th>stdev</th></tr>')
+    # report.write_line('<tr><td>%i</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td></tr>'  % (
+    #     results.total_transactions,
+    #     min(trans_timer_vals),
+    #     average(trans_timer_vals),
+    #     percentile(trans_timer_vals, 80),
+    #     percentile(trans_timer_vals, 90),
+    #     percentile(trans_timer_vals, 95),
+    #     max(trans_timer_vals),
+    #     standard_dev(trans_timer_vals),
+    # ))
+    # report.write_line('</table>')
+    #
+    #
+    # # all transactions - interval details
+    # avg_resptime_points = {}  # {intervalnumber: avg_resptime}
+    # percentile_80_resptime_points = {}  # {intervalnumber: 80pct_resptime}
+    # percentile_90_resptime_points = {}  # {intervalnumber: 90pct_resptime}
+    # interval_secs = ts_interval
+    # splat_series = split_series(trans_timer_points, interval_secs)
+    # report.write_line('<h3>Interval Details (secs)</h3>')
+    # report.write_line('<table>')
+    # report.write_line('<tr><th>interval</th><th>count</th><th>rate</th><th>min</th><th>avg</th><th>80pct</th><th>90pct</th><th>95pct</th><th>max</th><th>stdev</th></tr>')
+    # for i, bucket in enumerate(splat_series):
+    #     interval_start = int((i + 1) * interval_secs)
+    #     cnt = len(bucket)
+    #
+    #     if cnt == 0:
+    #         report.write_line('<tr><td>%i</td><td>0</td><td>0</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td></tr>' % (i + 1))
+    #     else:
+    #         rate = cnt / float(interval_secs)
+    #         mn = min(bucket)
+    #         avg = average(bucket)
+    #         pct_80 = percentile(bucket, 80)
+    #         pct_90 = percentile(bucket, 90)
+    #         pct_95 = percentile(bucket, 95)
+    #         mx = max(bucket)
+    #         stdev = standard_dev(bucket)
+    #         report.write_line('<tr><td>%i</td><td>%i</td><td>%.2f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td><td>%.3f</td></tr>' % (i + 1, cnt, rate, mn, avg, pct_80, pct_90, pct_95, mx, stdev))
+    #
+    #         avg_resptime_points[interval_start] = avg
+    #         percentile_80_resptime_points[interval_start] = pct_80
+    #         percentile_90_resptime_points[interval_start] = pct_90
+    #
+    # report.write_line('</table>')
+    # graph.resp_graph(avg_resptime_points, percentile_80_resptime_points, percentile_90_resptime_points, 'All_Transactions_response_times_intervals.png', results_dir)
+    #
+    #
+    # report.write_line('<h3>Graphs</h3>')
+    # report.write_line('<h4>Response Time: %s sec time-series</h4>' % ts_interval)
+    # report.write_line('<img src="All_Transactions_response_times_intervals.png"></img>')
+    # report.write_line('<h4>Response Time: raw data (all points)</h4>')
+    # report.write_line('<img src="All_Transactions_response_times.png"></img>')
+    # report.write_line('<h4>Throughput: 5 sec time-series</h4>')
+    # report.write_line('<img src="All_Transactions_throughput.png"></img>')
+    #
+    #
+    #
+    # # all transactions - throughput
+    # throughput_points = {}  # {intervalnumber: numberofrequests}
+    # interval_secs = ts_interval
+    # splat_series = split_series(trans_timer_points, interval_secs)
+    # for i, bucket in enumerate(splat_series):
+    #     throughput_points[int((i + 1) * interval_secs)] = (len(bucket) / interval_secs)
+    # graph.tp_graph(throughput_points, 'All_Transactions_throughput.png', results_dir)
 
 
 
