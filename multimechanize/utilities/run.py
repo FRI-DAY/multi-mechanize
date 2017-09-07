@@ -121,6 +121,11 @@ def run_test(project_name, cmd_opts, remote_starter=None):
                 elapsed = time.time() - start_time
 
             print p
+        else:
+            elapsed = 0
+            while elapsed < (run_time + 1):
+                time.sleep(1)
+                elapsed = time.time() - start_time
 
         print 'Time is up, sending abort to clients...'
         abort_event.set()
