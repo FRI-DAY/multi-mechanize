@@ -89,10 +89,11 @@ def run_test(project_name, cmd_opts, remote_starter=None):
     script_prefix = os.path.normpath(script_prefix)
 
     user_groups = []
+    abort_event = multiprocessing.Event()
     for i, ug_config in enumerate(user_group_configs):
         script_file = os.path.join(script_prefix, ug_config.script_file)
         ug = core.UserGroup(queue, i, ug_config.name, ug_config.num_threads,
-                            script_file, run_time, rampup)
+                            script_file, run_time, rampup, abort_event)
         user_groups.append(ug)
     for user_group in user_groups:
         user_group.start()
@@ -120,6 +121,9 @@ def run_test(project_name, cmd_opts, remote_starter=None):
                 elapsed = time.time() - start_time
 
             print p
+
+        print 'Time is up, sending abort to clients...'
+        abort_event.set()
 
         while [user_group for user_group in user_groups if user_group.is_alive()] != []:
             if progress_bar:
